@@ -6,6 +6,7 @@ namespace app;
 class SlackClient
 {
     protected $days = [];
+
     public function parse($week)
     {
 
@@ -47,14 +48,16 @@ class SlackClient
             $times = date('H:i', strtotime($lesson->start_date)) . ' ' . date('H:i', strtotime($lesson->end_date));
 
             return [
-                'fallback' => 'Required plain-text summary of the attachment.',
-                'color' => $color,
-                'pretext' => $pretext,
-                'text' => '-',
-                'fields' => [
-                    'title' => $title,
-                    'value' => $times,
-                    'short' => false,
+                'attachments' => [
+                    'fallback' => 'Required plain-text summary of the attachment.',
+                    'color' => $color,
+                    'pretext' => $pretext,
+                    'text' => '-',
+                    'fields' => [
+                        'title' => $title,
+                        'value' => $times,
+                        'short' => false,
+                    ]
                 ]
             ];
         }, $lessons);
