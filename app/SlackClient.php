@@ -53,9 +53,11 @@ class SlackClient
                 'pretext' => $pretext,
                 'text' => '-',
                 'fields' => [
-                    'title' => $title,
-                    'value' => $times,
-                    'short' => false,
+                    (object) [
+                        'title' => $title,
+                        'value' => $times,
+                        'short' => false
+                    ]
                 ]
             ];
         }, $lessons);
