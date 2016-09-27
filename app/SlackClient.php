@@ -43,8 +43,8 @@ class SlackClient
                 $this->lessons[] = $lesson->long_name;
             }
 
-            $firstTeacher = $lesson->lecturers ? $lesson->lecturers[0] : 'Empty';
-            $firstRoom = $lesson->locations ? $lesson->locations[0]->building : 'Empty';
+            $firstTeacher = $lesson->lecturers ? $lesson->lecturers[0] : '-';
+            $firstRoom = $lesson->locations ? $lesson->locations[0]->building : '-';
 
             $title = $lesson->long_name . ' - ' . $firstTeacher . ' - ' . $firstRoom;
 
