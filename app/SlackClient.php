@@ -50,6 +50,7 @@ class SlackClient
                 'fallback' => 'Required plain-text summary of the attachment.',
                 'color' => $color,
                 'pretext' => $pretext,
+                'text' => '',
                 'fields' => [
                     'title' => $title,
                     'value' => $times,
