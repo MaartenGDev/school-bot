@@ -47,22 +47,20 @@ class SlackClient
 
             $times = date('H:i', strtotime($lesson->start_date)) . ' ' . date('H:i', strtotime($lesson->end_date));
 
-            return [
-                'attachments' => [
-                    'fallback' => 'Required plain-text summary of the attachment.',
-                    'color' => $color,
-                    'pretext' => $pretext,
-                    'text' => '-',
-                    'fields' => [
-                        'title' => $title,
-                        'value' => $times,
-                        'short' => false,
-                    ]
+            return (object)[
+                'fallback' => 'Required plain-text summary of the attachment.',
+                'color' => $color,
+                'pretext' => $pretext,
+                'text' => '-',
+                'fields' => [
+                    'title' => $title,
+                    'value' => $times,
+                    'short' => false,
                 ]
             ];
         }, $lessons);
 
 
-        return $message;
+        return ['attachments' => $message];
     }
 }
