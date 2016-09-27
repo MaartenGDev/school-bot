@@ -6,6 +6,7 @@ namespace app;
 class SlackClient
 {
     protected $days = [];
+    protected $lessons = [];
 
     public function parse($week)
     {
@@ -38,12 +39,16 @@ class SlackClient
                 $this->days[] = $day;
             }
 
+            if (!in_array($lesson->long_name, $this->lessons)) {
+                $this->lessons[] = $lesson->long_name;
+            }
+
             $firstTeacher = $lesson->lecturers ? $lesson->lecturers[0] : 'Empty';
             $firstRoom = $lesson->locations ? $lesson->locations[0]->building : 'Empty';
 
             $title = $lesson->long_name . ' - ' . $firstTeacher . ' - ' . $firstRoom;
 
-            $color = $colors[array_search($day, $this->days)];
+            $color = $colors[array_search($lesson->long_name, $this->lessons)];
 
             $times = date('H:i', strtotime($lesson->start_date)) . ' ' . date('H:i', strtotime($lesson->end_date));
 
@@ -51,7 +56,7 @@ class SlackClient
                 'fallback' => 'Required plain-text summary of the attachment.',
                 'color' => $color,
                 'pretext' => $pretext,
-                'text' => '-',
+                'text' => '',
                 'fields' => [
                     (object) [
                         'title' => $title,
