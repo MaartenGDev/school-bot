@@ -1,8 +1,8 @@
 <?php
 namespace App;
 
+use DateInterval;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Cookie\CookieJar;
 use MaartenGDev\CacheInterface;
 
 class Client
@@ -10,36 +10,22 @@ class Client
     private $client;
     private $parser;
 
-    protected $userAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36';
-    protected $baseUrl = 'https://roosters.xedule.nl/Attendee/ChangeWeek/';
+    protected $baseUrl;
 
-    protected $group = '';
-    protected $ordeId = 130;
-    protected $code = 52257;
-    protected $attId = 1;
+    protected $startDate;
+    protected $endDate;
 
     protected $result;
     protected $cache;
 
-    public function __construct(ClientInterface $client, XeduleParser $parser, CacheInterface $cache)
+    public function __construct(ClientInterface $client, ParserInterface $parser, CacheInterface $cache)
     {
         date_default_timezone_set('Europe/Amsterdam');
 
+        $this->baseUrl = getenv('APP_SITE');
         $this->client = $client;
         $this->parser = $parser;
         $this->cache = $cache;
-    }
-
-    /**
-     * Set the group.
-     *
-     * @param string $group The group name.
-     *
-     * @return void
-     */
-    public function setGroup($group)
-    {
-        $this->group = $group;
     }
 
     /**
@@ -52,13 +38,12 @@ class Client
     {
         $query = http_build_query(
             [
-                'Code' => $this->group,
-                'OreId' => $this->ordeId,
-                'AttId' => $this->attId
+                'start_date' => $this->startDate,
+                'end_date' => $this->endDate,
             ]
         );
 
-        return $this->baseUrl . $this->code . '?' . $query;
+        return $this->baseUrl . '?' . $query;
     }
 
 
@@ -70,36 +55,36 @@ class Client
      * @param int $week The week number
      * @return $this
      */
-    protected function createForm(array $data, $week)
+    protected function getData($week)
     {
 
-        $key = 'rooster' . $week . $this->group;
+        $key = 'rooster' . $week;
 
-        $cache = $this->cache->has(
-            $key, function ($cache) use ($week, $key) {
+        $cache = $this->cache->has($key, function ($cache) use ($key) {
             return $this->result = $cache->get($key);
-        }
-        );
+        });
 
         if ($cache) {
             return $this;
         }
 
         $data = $this->client->request(
-            'POST',
+            'GET',
             $this->getApi(),
             [
-                'form_params' => $data,
                 'headers' => [
-                    'User-Agent' => $this->userAgent,
-                    'Cookie' => 'ASP.NET_SessionId=secureForSure; _ga=GA1.234.1234.123; _gat=1',
+                    'Cookie' => 'laravel_session=' . getenv('LOGIN_SESSION'),
+                    'Cookie2' => '$Version=1',
+                    'accessToken' => getenv('ACCESS_TOKEN'),
+                    'language' => getenv('LANGUAGE'),
+                    'clientToken' => getenv('CLIENT_TOKEN')
                 ]
             ]
         )->getBody();
 
         $this->cache->store($key, $data);
 
-        $this->result = $data;
+        $this->result = $this->cache->get('rooster' . $week);
         return $this;
     }
 
@@ -108,16 +93,34 @@ class Client
      *
      * @return array
      */
-    protected function post()
+    protected function parse()
     {
-        return $this->parser->parse($this->result)->allWeek();
+        return $this->parser->parse($this->result);
     }
 
+    protected function getStartAndEndForWeek($year,$week)
+    {
+        $startDate = new \DateTime();
+
+        $startDate->setISODate(date('Y'), $week);
+        $startDate->setTime(00, 46, 0);
+
+
+        $start = $startDate->getTimestamp();
+
+        $endDate = new \DateTime();
+        $endDate->setISODate($year, $week);
+        $endDate->setTime(23, 46, 59);
+        $endDate->add(DateInterval::createFromDateString('this week this sunday'));
+
+        $end = $endDate->getTimestamp();
+        return ['start' => $start, 'end' => $end];
+    }
     /**
      * Get the week by sending a post request.
      *
      * @param integer $week The week number
-     * @param string $year The year of the week.
+     * @param string  $year The year of the week.
      *
      * @return array
      */
@@ -127,11 +130,11 @@ class Client
             $year = date('Y');
         }
 
-        return $this->createForm(
-            [
-                'currentWeek' => "{$year}/{$week}"
-            ], $week
-        )
-            ->post();
+        $dateRange = $this->getStartAndEndForWeek($year, $week);
+
+        $this->startDate = $dateRange['start'];
+        $this->endDate = $dateRange['end'];
+
+        return $this->getData($week)->parse();
     }
 }
