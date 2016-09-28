@@ -18,31 +18,32 @@ class SlackClient
      */
     public function parseDay($dayName)
     {
+        $dayName = strtolower($dayName);
         $today = date('l');
         $tomorrow = date('l', strtotime('+1 day'));
         $dayAfterTomorrow = date('l', strtotime('+2 day'));
 
         $days = [
-            'Monday' => 'Monday',
-            'Tuesday' => 'Tuesday',
-            'Wednesday' => 'Wednesday',
-            'Thursday' => 'Thursday',
-            'Friday' => 'Friday',
-            'Saturday' => 'Monday',
-            'Sunday' => 'Monday',
-            'Maandag' => 'Monday',
-            'Dinsdag' => 'Tuesday',
-            'Woensdag' => 'Wednesday',
-            'Donderdag' => 'Thursday',
-            'Vrijdag' => 'Friday',
-            'Zaterdag' => 'Monday',
-            'Zondag' => 'Monday',
-            'Vandaag' => $today,
-            'Morgen' => $tomorrow,
-            'Overmorgen' => $dayAfterTomorrow,
-            'Today' => $today,
-            'Tomorrow' => $tomorrow,
-            'Overtomorrow' => $dayAfterTomorrow
+            'monday' => 'Monday',
+            'tuesday' => 'Tuesday',
+            'wednesday' => 'Wednesday',
+            'thursday' => 'Thursday',
+            'friday' => 'Friday',
+            'saturday' => 'Monday',
+            'sunday' => 'Monday',
+            'maandag' => 'Monday',
+            'dinsdag' => 'Tuesday',
+            'woensdag' => 'Wednesday',
+            'donderdag' => 'Thursday',
+            'vrijdag' => 'Friday',
+            'zaterdag' => 'Monday',
+            'zondag' => 'Monday',
+            'vandaag' => $today,
+            'morgen' => $tomorrow,
+            'overmorgen' => $dayAfterTomorrow,
+            'today' => $today,
+            'tomorrow' => $tomorrow,
+            'overtomorrow' => $dayAfterTomorrow
         ];
         return array_key_exists($dayName, $days) ? $days[$dayName] : 'Monday';
     }
