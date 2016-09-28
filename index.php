@@ -24,8 +24,7 @@ $client = new Client($guzzle, $parser, $cache);
 
 $weekNumber = date('W');
 
-$dayName = isset($_POST['text']) ? explode(' ',$_POST['text'])[1] : 'Monday';
-
+$dayName = $slackClient->parseDay($_POST['text']);
 $week = $client->getDay($dayName, $weekNumber);
 
 

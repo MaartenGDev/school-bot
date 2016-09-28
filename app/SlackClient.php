@@ -8,6 +8,45 @@ class SlackClient
     protected $days = [];
     protected $lessons = [];
 
+    /**
+     * Parses the name and returns
+     * the correct value with fallback.
+     *
+     * @param string $dayName The name of the day.
+     *
+     * @return string
+     */
+    public function parseDay($dayName)
+    {
+        $today = date('l');
+        $tomorrow = date('l', strtotime('+1 day'));
+        $dayAfterTomorrow = date('l', strtotime('+2 day'));
+
+        $days = [
+            'Monday' => 'Monday',
+            'Tuesday' => 'Tuesday',
+            'Wednesday' => 'Wednesday',
+            'Thursday' => 'Thursday',
+            'Friday' => 'Friday',
+            'Saturday' => 'Monday',
+            'Sunday' => 'Monday',
+            'Maandag' => 'Monday',
+            'Dinsdag' => 'Tuesday',
+            'Woensdag' => 'Wednesday',
+            'Donderdag' => 'Thursday',
+            'Vrijdag' => 'Friday',
+            'Zaterdag' => 'Monday',
+            'Zondag' => 'Monday',
+            'Vandaag' => $today,
+            'Morgen' => $tomorrow,
+            'Overmorgen' => $dayAfterTomorrow,
+            'Today' => $today,
+            'Tomorrow' => $tomorrow,
+            'Overtomorrow' => $dayAfterTomorrow
+        ];
+        return array_key_exists($dayName, $days) ? $days[$dayName] : 'Monday';
+    }
+
     public function parse($week)
     {
 
@@ -63,7 +102,7 @@ class SlackClient
                 'start_date' => $lesson->start_date,
                 'end_date' => $lesson->end_date,
                 'fields' => [
-                    (object) [
+                    (object)[
                         'title' => $title,
                         'value' => $times,
                         'short' => false
