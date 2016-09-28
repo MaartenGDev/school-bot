@@ -18,8 +18,6 @@ class SlackClient
      */
     public function parseDay($dayName)
     {
-        $dayName = explode(' ', $dayName)[1];
-
         $dayName = trim(strtolower($dayName));
         $today = date('l');
         $tomorrow = date('l', strtotime('+1 day'));
