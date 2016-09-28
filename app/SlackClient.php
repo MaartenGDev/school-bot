@@ -102,7 +102,6 @@ class SlackClient
                 'fallback' => 'Required plain-text summary of the attachment.',
                 'color' => $color,
                 'pretext' => $pretext,
-                'text' => '',
                 'start_date' => $lesson->start_date,
                 'end_date' => $lesson->end_date,
                 'fields' => [
@@ -116,6 +115,10 @@ class SlackClient
         }, $lessons);
 
 
-        return ['attachments' => $message, 'response_type' => 'ephemeral'];
+        return [
+            'attachments' => $message,
+            'response_type' => 'in_channel',
+            'text' => 'Test - Test'
+        ];
     }
 }
