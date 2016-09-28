@@ -136,5 +136,19 @@ class Client
         $this->endDate = $dateRange['end'];
 
         return $this->getData($week)->parse();
+
+    }
+
+    public function getDay($day,$week, $year = null){
+
+        $data = $this->getWeek($week, $year);
+
+        $weeks = array_filter(json_decode($data), function($lesson) use ($day) {
+            $dayName = date('l', strtotime($lesson->start_date));
+            return strtolower($dayName) === strtolower($day);
+        });
+
+        $this->result = json_encode(array_values($weeks));
+        return $this->parse();
     }
 }

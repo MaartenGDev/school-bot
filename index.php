@@ -24,12 +24,12 @@ $client = new Client($guzzle, $parser, $cache);
 
 $weekNumber = date('W');
 
+$dayName = isset($_POST['text']) ? explode(' ',$_POST['text'])[1] : 'Monday';
+
+$week = $client->getDay($dayName, $weekNumber);
 
 
-
-$week = $client->getWeek($weekNumber);
 
 header("Access-Control-Allow-Origin: *");
 
 echo json_encode($slackClient->parse($week));
-

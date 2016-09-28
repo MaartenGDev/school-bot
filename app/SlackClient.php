@@ -25,11 +25,14 @@ class SlackClient
             '#2c3e50',
             '#f1c40f'
         ];
+
+
         $lessons = json_decode($week);
+
 
         $message = array_map(function ($lesson) use ($colors) {
 
-            $day = date('l', strtotime($lesson->start_date));
+            $day = date('l d-m-Y', strtotime($lesson->start_date));
 
             $pretext = null;
             $title = null;
@@ -57,6 +60,8 @@ class SlackClient
                 'color' => $color,
                 'pretext' => $pretext,
                 'text' => '',
+                'start_date' => $lesson->start_date,
+                'end_date' => $lesson->end_date,
                 'fields' => [
                     (object) [
                         'title' => $title,
