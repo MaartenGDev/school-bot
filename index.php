@@ -27,8 +27,6 @@ $weekNumber = date('W');
 $dayName = $slackClient->parseDay($_POST['text']);
 $week = $client->getDay($dayName, $weekNumber);
 
-
-
 header("Access-Control-Allow-Origin: *");
 
 echo json_encode($slackClient->parse($week));
