@@ -117,7 +117,7 @@ class SlackClient
 
         return [
             'attachments' => $message,
-            'response_type' => 'in_channel',
+            'response_type' => 'Ephemeral',
             'text' => ''
         ];
     }
