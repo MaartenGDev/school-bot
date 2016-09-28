@@ -46,6 +46,7 @@ class SlackClient
             'morgu' => $tomorrow,
             'morge' => $tomorrow,
             'overmorgen' => $dayAfterTomorrow,
+            'overmorge' => $dayAfterTomorrow,
             'today' => $today,
             'tomorrow' => $tomorrow,
             'overtomorrow' => $dayAfterTomorrow,
