@@ -43,12 +43,14 @@ class SlackClient
             'zondag' => 'Monday',
             'vandaag' => $today,
             'morgen' => $tomorrow,
+            'morgu' => $tomorrow,
+            'morge' => $tomorrow,
             'overmorgen' => $dayAfterTomorrow,
             'today' => $today,
             'tomorrow' => $tomorrow,
             'overtomorrow' => $dayAfterTomorrow
         ];
-        return array_key_exists($dayName, $days) ? $days[$dayName] : 'Monday';
+        return array_key_exists($dayName, $days) ? $days[$dayName] : 'all';
     }
 
     public function parse($week)
