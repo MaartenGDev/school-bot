@@ -116,6 +116,6 @@ class SlackClient
         }, $lessons);
 
 
-        return ['attachments' => $message];
+        return ['attachments' => $message, 'response_type' => 'ephemeral'];
     }
 }
