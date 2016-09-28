@@ -48,7 +48,21 @@ class SlackClient
             'overmorgen' => $dayAfterTomorrow,
             'today' => $today,
             'tomorrow' => $tomorrow,
-            'overtomorrow' => $dayAfterTomorrow
+            'overtomorrow' => $dayAfterTomorrow,
+            'mendei' => 'Monday',
+            'moandei' => 'Monday',
+            'moanje' => 'Monday',
+            'tiisdei' => 'Tuesday',
+            'wansdy' => 'Wednesday',
+            'woansdei' => 'Wednesday',
+            'tongersdei' => 'Thursday',
+            'freed' => 'Friday',
+            'sneon' => 'Monday',
+            'saterje' => 'Monday',
+            'snein' => 'Monday',
+            'hjoed' => $today,
+            'moarn' => $tomorrow,
+            'oermoarn' => $dayAfterTomorrow
         ];
         return array_key_exists($dayName, $days) ? $days[$dayName] : 'all';
     }
