@@ -118,7 +118,7 @@ class SlackClient
         return [
             'attachments' => $message,
             'response_type' => 'in_channel',
-            'text' => 'Test - Test'
+            'text' => ''
         ];
     }
 }
