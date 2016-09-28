@@ -25,7 +25,10 @@ $client = new Client($guzzle, $parser, $cache);
 $weekNumber = date('W');
 
 $dayName = $slackClient->parseDay($_POST['text']);
-$week = $client->getDay($dayName, $weekNumber);
+
+$week = $dayName === 'all' ?
+    $client->getWeek($weekNumber) :
+    $client->getDay($dayName, $weekNumber);
 
 header("Access-Control-Allow-Origin: *");
 
