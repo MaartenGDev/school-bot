@@ -27,7 +27,7 @@ $weekNumber = date('W');
 $text = isset($_POST['text']) ? $_POST['text'] : '';
 $dayName = $slackClient->parseDay($text);
 
-$week = $dayName === 'all' ?
+$week = $dayName === 'All' ?
     $client->getWeek($weekNumber) :
     $client->getDay($dayName, $weekNumber);
 
