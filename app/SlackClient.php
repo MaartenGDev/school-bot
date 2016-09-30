@@ -36,52 +36,61 @@ class SlackClient
      *
      * @return string
      */
-    public function parseDay($dayName)
+    public function parseDayAndWeek($description)
     {
-        $dayName = trim(strtolower($dayName));
+        $isWeek = false;
 
-        // setting default to all, in case the input does not exist in array
-        $day = 'All';
+        $week = date('W');
+        $today = date('l');
+        $tomorrow = date('l', strtotime('+1 day'));
+        $dayAfterTomorrow = date('l', strtotime('+2 day'));
+
+        $day = 'Monday';
+        $description = trim(strtolower($description));
+        $dayName = $description;
+        $dayAndWeek = explode(' ', $description);
+
+        if (count($dayAndWeek) === 2) {
+            $week = (int)$dayAndWeek[1];
+            $dayName = $dayAndWeek[0];
+        }
+
+        $allWeekDays = ['all', '', 'week'];
+
+        if (in_array($dayName, $allWeekDays)) {
+            $isWeek = true;
+        }
+
         $days = [
-            'All' => ['all', '', 'week'],
             'Monday' => ['monday', 'sunday', 'saturday', 'maandag', 'zaterdag', 'zondag', 'mendei', 'moandei', 'moanje', 'sneon', 'snein'],
             'Tuesday' => ['tuesday', 'dinsdag', 'tiisdei'],
-            'Wednesday' => ['wednesday','woensdag', 'wansdy','woansdei'],
-            'Thursday' => ['thursday', 'donderdag','tongersdei'],
-            'Friday' => ['friday', 'vrijdag','freed'],
+            'Wednesday' => ['wednesday', 'woensdag', 'wansdy', 'woansdei'],
+            'Thursday' => ['thursday', 'donderdag', 'tongersdei'],
+            'Friday' => ['friday', 'vrijdag', 'freed'],
             'Today' => ['vandaag', 'today', 'hjoed'],
-            'Tomorrow' => ['morgen', 'morge','morgu', 'morguh', 'moarn','tomorrow'],
-            'DayAfterTomorrow' => ['overtomorrow','overmorgen','overmorge','overmorguh','oermoarn']
+            'Tomorrow' => ['morgen', 'morge', 'morgu', 'morguh', 'moarn', 'tomorrow'],
+            'DayAfterTomorrow' => ['overtomorrow', 'overmorgen', 'overmorge', 'overmorguh', 'oermoarn']
         ];
 
+        $relativeTimes = ['Today' => $today, 'Tomorrow' => $tomorrow, 'DayAfterTomorrow' => $dayAfterTomorrow];
 
         foreach ($days as $key => $value) {
-            if(in_array($dayName, $value)){
+            if (in_array($dayName, $value)) {
                 $day = $key;
                 break;
             }
         }
 
-        switch($day){
-            case 'Today':
-                $day = date('l');
-                break;
-            case 'Tomorrow':
-                $day = date('l', strtotime('+1 day'));
-                break;
-            case 'DayAfterTomorrow':
-                $day = date('l', strtotime('+2 day'));
-                break;
-            default:
-                break;
+        if (in_array($day, $relativeTimes)) {
+            $day = $relativeTimes[$day];
         }
-        return $day;
+
+        return (object)['day' => $day, 'week' => $week, 'isWeek' => $isWeek];
     }
 
     public function parse($week)
     {
         $lessons = collect(json_decode($week));
-
 
         $message = $lessons->groupBy(function ($lesson) {
             return date('d-m', strtotime($lesson->start_date));
@@ -92,46 +101,6 @@ class SlackClient
                 });
             })->flatten();
         });
-
-        //     $day =  date('l d-m-Y', strtotime($lesson->start_date));
-
-        //     $pretext = null;
-        //     $title = null;
-
-        //     if (!in_array($day, $this->days)) {
-        //         $pretext = $day;
-        //         $this->days[] = $day;
-        //     }
-
-        //     if (!in_array($lesson->long_name, $this->lessons)) {
-        //         $this->lessons[] = $lesson->long_name;
-        //     }
-
-        //     $firstTeacher = $lesson->lecturers ? $lesson->lecturers[0] : '-';
-        //     $firstRoom = $lesson->locations ? $lesson->locations[0]->building : '-';
-
-        //     $title = $lesson->long_name . ' - ' . $firstTeacher . ' - ' . $firstRoom;
-
-        //     $color = $colors[array_search($lesson->long_name, $this->lessons)];
-
-        //     $times = date('H:i', strtotime($lesson->start_date)) . ' ' . date('H:i', strtotime($lesson->end_date));
-
-        //     return (object)[
-        //         'fallback' => 'Required plain-text summary of the attachment.',
-        //         'color' => $color,
-        //         'pretext' => $pretext,
-        //         'start_date' => $lesson->start_date,
-        //         'end_date' => $lesson->end_date,
-        //         'fields' => [
-        //             (object)[
-        //                 'title' => $title,
-        //                 'value' => $times,
-        //                 'short' => false
-        //             ]
-        //         ]
-        //     ];
-        // });
-
 
         return [
             'attachments' => $message,

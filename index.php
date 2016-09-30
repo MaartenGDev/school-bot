@@ -23,14 +23,13 @@ $storage = new LocalDriver($dir);
 $cache = new Cache($storage, 15);
 $client = new Client($guzzle, $parser, $cache);
 
-$weekNumber = date('W');
-
 $text = isset($_POST['text']) ? $_POST['text'] : '';
-$dayName = $slackClient->parseDay($text);
+$dayAndWeek= $slackClient->parseDayAndWeek($text);
 
-$week = $dayName === 'All' ?
-    $client->getWeek($weekNumber) :
-    $client->getDay($dayName, $weekNumber);
+$week = $dayAndWeek->isWeek ?
+    $client->getWeek($dayAndWeek->week) :
+    $client->getDay($dayAndWeek->day, $dayAndWeek->week);
+
 
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
