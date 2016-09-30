@@ -29,6 +29,7 @@ $week = $dayAndWeek->isWeek ?
     $client->getWeek($dayAndWeek->week) :
     $client->getDay($dayAndWeek->day, $dayAndWeek->week);
 
+
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 

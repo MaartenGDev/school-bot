@@ -19,63 +19,50 @@ class SlackClient
     public function parseDayAndWeek($description)
     {
         $isWeek = false;
+
         $week = date('W');
-        $description = trim(strtolower($description));
-
-        if(count(explode(' ', $description)) === 2){
-            $isWeek = true;
-            $week = (int) explode(' ', $description)[1];
-        }
-
-        $dayName = $isWeek ? $description : explode(' ', $description)[0];
         $today = date('l');
         $tomorrow = date('l', strtotime('+1 day'));
         $dayAfterTomorrow = date('l', strtotime('+2 day'));
 
+        $day = 'Monday';
+        $description = trim(strtolower($description));
+        $dayName = $description;
+        $dayAndWeek = explode(' ', $description);
+
+        if (count($dayAndWeek) === 2) {
+            $week = (int) $dayAndWeek[1];
+            $dayName = $dayAndWeek[0];
+            $isWeek = true;
+        }
+
         $days = [
-            '' => 'all',
-            'all' => 'all',
-            'week' => 'week',
-            'monday' => 'Monday',
-            'tuesday' => 'Tuesday',
-            'wednesday' => 'Wednesday',
-            'thursday' => 'Thursday',
-            'friday' => 'Friday',
-            'saturday' => 'Monday',
-            'sunday' => 'Monday',
-            'maandag' => 'Monday',
-            'dinsdag' => 'Tuesday',
-            'woensdag' => 'Wednesday',
-            'donderdag' => 'Thursday',
-            'vrijdag' => 'Friday',
-            'zaterdag' => 'Monday',
-            'zondag' => 'Monday',
-            'vandaag' => $today,
-            'morgen' => $tomorrow,
-            'morgu' => $tomorrow,
-            'morge' => $tomorrow,
-            'overmorgen' => $dayAfterTomorrow,
-            'overmorge' => $dayAfterTomorrow,
-            'today' => $today,
-            'tomorrow' => $tomorrow,
-            'overtomorrow' => $dayAfterTomorrow,
-            'mendei' => 'Monday',
-            'moandei' => 'Monday',
-            'moanje' => 'Monday',
-            'tiisdei' => 'Tuesday',
-            'wansdy' => 'Wednesday',
-            'woansdei' => 'Wednesday',
-            'tongersdei' => 'Thursday',
-            'freed' => 'Friday',
-            'sneon' => 'Monday',
-            'saterje' => 'Monday',
-            'snein' => 'Monday',
-            'hjoed' => $today,
-            'moarn' => $tomorrow,
-            'oermoarn' => $dayAfterTomorrow
+            'All' => ['all', '', 'week'],
+            'Monday' => ['monday', 'sunday', 'saturday', 'maandag', 'zaterdag', 'zondag', 'mendei', 'moandei', 'moanje', 'sneon', 'snein'],
+            'Tuesday' => ['tuesday', 'dinsdag', 'tiisdei'],
+            'Wednesday' => ['wednesday', 'woensdag', 'wansdy', 'woansdei'],
+            'Thursday' => ['thursday', 'donderdag', 'tongersdei'],
+            'Friday' => ['friday', 'vrijdag', 'freed'],
+            'Today' => ['vandaag', 'today', 'hjoed'],
+            'Tomorrow' => ['morgen', 'morge', 'morgu', 'morguh', 'moarn', 'tomorrow'],
+            'DayAfterTomorrow' => ['overtomorrow', 'overmorgen', 'overmorge', 'overmorguh', 'oermoarn']
         ];
-        $day = array_key_exists($dayName, $days) ? $days[$dayName] : 'Monday';
-        return (object) ['day' => $day,'week' => $week,'isWeek' => $isWeek];
+
+        $relativeTimes = ['Today' => $today, 'Tomorrow' => $tomorrow,'DayAfterTomorrow' => $dayAfterTomorrow];
+
+        foreach ($days as $key => $value) {
+            if (in_array($dayName, $value)) {
+                $day = $key;
+                break;
+            }
+        }
+
+        if(in_array($day,$relativeTimes)){
+            $day = $relativeTimes[$day];
+        }
+
+
+        return (object)['day' => $day, 'week' => $week, 'isWeek' => $isWeek];
     }
 
     public function parse($week)
