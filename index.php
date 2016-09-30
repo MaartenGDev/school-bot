@@ -1,7 +1,16 @@
 <?php
 namespace App;
 
-var_dump($_POST);
+$data = ['token' => "xoxp-31730314276-47553129539-85993043030-80e5d3b86526db733447a3d53eb8856f"];
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL, "https://slack.com/api/groups.list");
+curl_setopt_array($curl, [
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => $data,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_USERAGENT => 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)']);
+$result = curl_exec($curl);
+var_dump($result);
 /*
 require_once 'vendor/autoload.php';
 
