@@ -16,9 +16,18 @@ class SlackClient
      *
      * @return string
      */
-    public function parseDay($dayName)
+    public function parseDayAndWeek($description)
     {
-        $dayName = trim(strtolower($dayName));
+        $isWeek = false;
+        $week = date('W');
+        $description = trim(strtolower($description));
+
+        if(count(explode(' ', $description)) === 2){
+            $isWeek = true;
+            $week = (int) explode(' ', $description)[1];
+        }
+
+        $dayName = $isWeek ? $description : explode(' ', $description)[0];
         $today = date('l');
         $tomorrow = date('l', strtotime('+1 day'));
         $dayAfterTomorrow = date('l', strtotime('+2 day'));
@@ -65,7 +74,8 @@ class SlackClient
             'moarn' => $tomorrow,
             'oermoarn' => $dayAfterTomorrow
         ];
-        return array_key_exists($dayName, $days) ? $days[$dayName] : 'all';
+        $day = array_key_exists($dayName, $days) ? $days[$dayName] : 'Monday';
+        return (object) ['day' => $day,'week' => $week,'isWeek' => $isWeek];
     }
 
     public function parse($week)
