@@ -31,13 +31,17 @@ class SlackClient
         $dayAndWeek = explode(' ', $description);
 
         if (count($dayAndWeek) === 2) {
-            $week = (int) $dayAndWeek[1];
+            $week = (int)$dayAndWeek[1];
             $dayName = $dayAndWeek[0];
+        }
+
+        $allWeekDays = ['all', '', 'week'];
+
+        if (in_array($dayName, $allWeekDays)) {
             $isWeek = true;
         }
 
         $days = [
-            'All' => ['all', '', 'week'],
             'Monday' => ['monday', 'sunday', 'saturday', 'maandag', 'zaterdag', 'zondag', 'mendei', 'moandei', 'moanje', 'sneon', 'snein'],
             'Tuesday' => ['tuesday', 'dinsdag', 'tiisdei'],
             'Wednesday' => ['wednesday', 'woensdag', 'wansdy', 'woansdei'],
@@ -48,7 +52,7 @@ class SlackClient
             'DayAfterTomorrow' => ['overtomorrow', 'overmorgen', 'overmorge', 'overmorguh', 'oermoarn']
         ];
 
-        $relativeTimes = ['Today' => $today, 'Tomorrow' => $tomorrow,'DayAfterTomorrow' => $dayAfterTomorrow];
+        $relativeTimes = ['Today' => $today, 'Tomorrow' => $tomorrow, 'DayAfterTomorrow' => $dayAfterTomorrow];
 
         foreach ($days as $key => $value) {
             if (in_array($dayName, $value)) {
@@ -57,7 +61,7 @@ class SlackClient
             }
         }
 
-        if(in_array($day,$relativeTimes)){
+        if (in_array($day, $relativeTimes)) {
             $day = $relativeTimes[$day];
         }
 
