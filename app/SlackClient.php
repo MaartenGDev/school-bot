@@ -6,8 +6,6 @@ use App\Lesson;
 
 class SlackClient
 {
-    protected $days = [];
-    protected $lessons = [];
     protected $colors;
 
     public function __construct() {
@@ -26,6 +24,21 @@ class SlackClient
             '#f1c40f'
         ]);
 
+
+        $this->translations = collect([
+            'Monday' => ['monday', 'sunday', 'saturday', 'maandag', 'zaterdag', 'zondag', 'mendei', 'moandei', 'moanje', 'sneon', 'snein'],
+            'Tuesday' => ['tuesday', 'dinsdag', 'tiisdei'],
+            'Wednesday' => ['wednesday', 'woensdag', 'wansdy', 'woansdei'],
+            'Thursday' => ['thursday', 'donderdag', 'tongersdei'],
+            'Friday' => ['friday', 'vrijdag', 'freed'],
+            'Today' => ['vandaag', 'today', 'hjoed'],
+            '+1 day' => ['morgen', 'morge', 'morgu', 'morguh', 'moarn', 'tomorrow'],
+            '+2 day' => ['overtomorrow', 'overmorgen', 'overmorge', 'overmorguh', 'oermoarn']
+        ]);
+
+        $this->week = collect(['all', 'week']);
+
+        $this->translations->transform('collect');
     }
 
     /**
@@ -38,72 +51,52 @@ class SlackClient
      */
     public function parseDayAndWeek($description)
     {
-        $isWeek = false;
-
         $week = date('W');
         $today = date('l');
-        $tomorrow = date('l', strtotime('+1 day'));
-        $dayAfterTomorrow = date('l', strtotime('+2 day'));
 
-        $day = 'Monday';
-        $description = trim(strtolower($description));
-        $dayName = $description;
-        $dayAndWeek = explode(' ', $description);
+        $dayAndWeek = explode(' ', trim(strtolower($description)));
 
+        $day = $dayAndWeek[0];
         if (count($dayAndWeek) === 2) {
             $week = (int)$dayAndWeek[1];
-            $dayName = $dayAndWeek[0];
         }
 
-        $allWeekDays = ['all', '', 'week'];
+        $isWeek = $this->week->search($day) === true || $day == '';
 
-        if (in_array($dayName, $allWeekDays)) {
-            $isWeek = true;
-        }
+        $relativeTimes = collect(['Today' => $today]);
 
-        $days = [
-            'Monday' => ['monday', 'sunday', 'saturday', 'maandag', 'zaterdag', 'zondag', 'mendei', 'moandei', 'moanje', 'sneon', 'snein'],
-            'Tuesday' => ['tuesday', 'dinsdag', 'tiisdei'],
-            'Wednesday' => ['wednesday', 'woensdag', 'wansdy', 'woansdei'],
-            'Thursday' => ['thursday', 'donderdag', 'tongersdei'],
-            'Friday' => ['friday', 'vrijdag', 'freed'],
-            'Today' => ['vandaag', 'today', 'hjoed'],
-            'Tomorrow' => ['morgen', 'morge', 'morgu', 'morguh', 'moarn', 'tomorrow'],
-            'DayAfterTomorrow' => ['overtomorrow', 'overmorgen', 'overmorge', 'overmorguh', 'oermoarn']
-        ];
+        $day = $this->translations->search(function($translations) use ($day) {
+            return $translations->search($day) !== false;
+        }) ?: 'Monday';
 
-        $relativeTimes = ['Today' => $today, 'Tomorrow' => $tomorrow, 'DayAfterTomorrow' => $dayAfterTomorrow];
-
-        foreach ($days as $key => $value) {
-            if (in_array($dayName, $value)) {
-                $day = $key;
-                break;
-            }
-        }
-
-        if (in_array($day, $relativeTimes)) {
-            $day = $relativeTimes[$day];
-        }
+        $day = $relativeTimes->get($day, $day);
 
         return (object)['day' => $day, 'week' => $week, 'isWeek' => $isWeek];
     }
 
+    /**
+     * Parses the week and returns the items in the slack requested format
+     *
+     * @param  string $week JSON string
+     *
+     * @return array
+     */
     public function parse($week)
     {
-        $lessons = collect(json_decode($week));
-
-        $message = $lessons->groupBy(function ($lesson) {
+        $message = collect(json_decode($week))->groupBy(function ($lesson) {
             return date('d-m', strtotime($lesson->start_date));
         })->map(function ($lessons) {
             return $lessons->groupBy('long_name')->map(function ($lessons) {
                 return $lessons->map(function ($lesson) {
-                    return new Lesson($lesson, $this->colors->shift());
+                    return new Lesson($lesson, $this->colors->shift(), false);
                 });
             })->flatten();
+        })->map(function ($lessons) {
+            return $lessons->put(0, $lessons->first()->hasPretext());
         });
 
         return [
-            'attachments' => $message,
+            'attachments' => $message->values(),
             'response_type' => 'Ephemeral',
             'text' => ''
         ];
