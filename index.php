@@ -1,6 +1,8 @@
 <?php
 namespace App;
 
+var_dump($_POST);
+/*
 require_once 'vendor/autoload.php';
 
 use Dotenv\Dotenv;
@@ -34,4 +36,5 @@ $week = $dayName === 'All' ?
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 
-echo json_encode($slackClient->parse($week));
+echo json_encode($slackClient->parse($week));*/
+

@@ -60,7 +60,6 @@ class SlackClient
 
     public function parse($week)
     {
-
         $colors = [
             '#1abc9c',
             '#2ecc71',
