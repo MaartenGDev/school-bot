@@ -13,9 +13,11 @@ class Lesson
 		$this->color = $color;
 		$this->lesson = $lesson;
 
-		$this->fields->title = $this->getTitle();
-		$this->fields->value = $this->getValue();
-		$this->fields->short = false;
+		$this->fields = collect([ (object)[
+			'title' => $this->getTitle(),
+			'value' => $this->getValue(),
+			'short' => false
+		]]);
 	}
 
 	public function hasPretext()

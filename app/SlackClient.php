@@ -9,22 +9,6 @@ class SlackClient
     protected $colors;
 
     public function __construct() {
-         $this->colors = collect([
-            '#1abc9c',
-            '#2ecc71',
-            '#3498db',
-            '#9b59b6',
-            '#34495e',
-            '#16a085',
-            '#27ae60',
-            '#16a085',
-            '#2980b9',
-            '#8e44ad',
-            '#2c3e50',
-            '#f1c40f'
-        ]);
-
-
         $this->translations = collect([
             'Monday' => ['monday', 'sunday', 'saturday', 'maandag', 'zaterdag', 'zondag', 'mendei', 'moandei', 'moanje', 'sneon', 'snein'],
             'Tuesday' => ['tuesday', 'dinsdag', 'tiisdei'],
@@ -39,6 +23,24 @@ class SlackClient
         $this->week = collect(['all', 'week']);
 
         $this->translations->transform('collect');
+    }
+
+    public function resetColors()
+    {
+        $this->colors = collect([
+            '#1abc9c',
+            '#2ecc71',
+            '#3498db',
+            '#9b59b6',
+            '#34495e',
+            '#16a085',
+            '#27ae60',
+            '#16a085',
+            '#2980b9',
+            '#8e44ad',
+            '#2c3e50',
+            '#f1c40f'
+        ]);
     }
 
     /**
@@ -86,6 +88,8 @@ class SlackClient
         $message = collect(json_decode($week))->groupBy(function ($lesson) {
             return date('d-m', strtotime($lesson->start_date));
         })->map(function ($lessons) {
+            $this->resetColors();
+
             return $lessons->groupBy('long_name')->map(function ($lessons) {
                 return $lessons->map(function ($lesson) {
                     return new Lesson($lesson, $this->colors->shift(), false);
