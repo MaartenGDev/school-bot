@@ -61,7 +61,7 @@ class SlackClient
             $week = (int)$dayAndWeek[1];
         }
 
-        $isWeek = $this->week->search($day) === true || $day == '';
+        $isWeek = $this->week->search($day) === true || $day === '';
 
         $relativeTimes = collect(['Today' => $today]);
 
