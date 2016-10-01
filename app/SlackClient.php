@@ -93,7 +93,7 @@ class SlackClient
             })->flatten();
         })->map(function ($lessons) {
             return $lessons->put(0, $lessons->first()->hasPretext());
-        });
+        })->flatten();
 
         return [
             'attachments' => $message->values(),
