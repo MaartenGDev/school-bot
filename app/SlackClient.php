@@ -66,7 +66,7 @@ class SlackClient
         $relativeTimes = collect(['Today' => $today]);
 
         $day = $this->translations->search(function($translations) use ($day) {
-            return $translations->search($day) !== false;
+            return !($translations->search($day) === false);
         }) ?: 'Monday';
 
         $day = $relativeTimes->get($day, $day);

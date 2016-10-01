@@ -27,11 +27,18 @@ class Lesson
 
 	public function getTitle()
 	{
-		return $this->lesson->long_name . ' - ' . $this->lesson->lecturers[0] ?? '-' . ' - ' . ($this->lesson->locations[0] ?? (object)[])->building;
+		return implode([
+			$this->lesson->long_name,
+			$this->lesson->lecturers[0] ?? '-',
+			($this->lesson->locations[0] ?? (object)[])->building
+		], ' - ');
 	}
 
 	public function getValue()
 	{
-		return date('H:i', strtotime($this->lesson->start_date)) . ' ' . date('H:i', strtotime($this->lesson->end_date));
+		return implode([
+			date('H:i', strtotime($this->lesson->start_date)),
+			date('H:i', strtotime($this->lesson->end_date))
+		], ' ');
 	}
 }
