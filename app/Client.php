@@ -77,7 +77,8 @@ class Client
                     'Cookie2' => '$Version=1',
                     'accessToken' => getenv('ACCESS_TOKEN'),
                     'language' => getenv('LANGUAGE'),
-                    'clientToken' => getenv('CLIENT_TOKEN')
+                    'clientToken' => getenv('CLIENT_TOKEN'),
+                    'timetable_id' => $this->selectRooster()
                 ]
             ]
         )->getBody();
@@ -150,5 +151,55 @@ class Client
 
         $this->result = json_encode(array_values($weeks));
         return $this->parse();
+    }
+
+    /**
+     * Get the timetable id by slack group
+     *
+     * @return bool|string
+     */
+    public function selectRooster(){
+        $data = ['token' => "xoxp-31730314276-47553129539-85993043030-80e5d3b86526db733447a3d53eb8856f"];
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_URL => "https://slack.com/api/groups.list"
+        ]);
+        $jsonGroups = curl_exec($curl);
+
+        $roosterGroepen = json_decode($jsonGroups);
+        $roosterGroepen = $roosterGroepen->groups;
+
+        foreach ($roosterGroepen as $key => $value) {
+            if(preg_match("`stoter`", $value->name)){
+                if(is_string($roosterId = $this->determineRoosterID($value->members, 'stoter'))){
+                    return $roosterId;
+                }
+            }
+            elseif(preg_match("`roode`", $value->name)) {
+                if (is_string($roosterId = $this->determineRoosterID($value->members, 'roode'))){
+                    return $roosterId;
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if the current user is in the group
+     *
+     * @param array $key Array with the group users
+     * @param string $ltb The current LTB to evaluate
+     *
+     * @return bool|string
+     */
+    public function determineRoosterID ($key, $ltb){
+        if( in_array($_POST['user_id'], $key) ){
+            return ($ltb == 'stoter' ? '8306' : '2473');
+        }
+        else {
+            return false;
+        }
     }
 }

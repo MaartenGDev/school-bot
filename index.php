@@ -1,32 +1,16 @@
 <?php
 namespace App;
+    /*timetable_id 2473 => roode, 8306 => stoter
+    user_id = jelmer => U1DG93TFV, maarten => U0XMXB9SM
+    */
 
 //header("Content-type: application/json");
-$data = ['token' => "xoxp-31730314276-47553129539-85993043030-80e5d3b86526db733447a3d53eb8856f"];
-$curl = curl_init();
-curl_setopt($curl, CURLOPT_URL, "https://slack.com/api/groups.list");
-curl_setopt_array($curl, [
-    CURLOPT_POST => true,
-    CURLOPT_POSTFIELDS => $data,
-    CURLOPT_RETURNTRANSFER => true
-]);
-$result = curl_exec($curl);
-//echo $result;
 
-$roosterGroepen = json_decode($result);
-$roosterGroepen = $roosterGroepen->groups;
-foreach ($roosterGroepen as $key => $value) {
-    if(!preg_match("`ltb`", $value->name)){
-        unset($roosterGroepen[$key]);
-    }
-    echo $key."<br >";
-}
-var_dump($roosterGroepen);
-//
-//if (in_array($_POST['user_id'], $roosterGroepen)){
-//
-//}
-/*
+$_POST = [ 'text' => 'rooster ', 'user_id' => 'U1DG93TFV']; //Jelmer
+//$_POST = [ 'text' => 'rooster ', 'user_id' => 'U0XMXB9SM']; //Maarten
+
+
+
 require_once 'vendor/autoload.php';
 
 use Dotenv\Dotenv;
@@ -60,5 +44,4 @@ $week = $dayName === 'All' ?
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 
-echo json_encode($slackClient->parse($week));*/
-
+echo json_encode($slackClient->parse($week));
