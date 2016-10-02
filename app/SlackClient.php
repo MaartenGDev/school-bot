@@ -27,7 +27,9 @@ class SlackClient
 
     public function resetColors()
     {
+
         $this->colors = collect([
+
             '#1abc9c',
             '#2ecc71',
             '#3498db',
