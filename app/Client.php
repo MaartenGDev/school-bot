@@ -169,17 +169,17 @@ class Client
         ]);
         $jsonGroups = curl_exec($curl);
 
-        $roosterGroepen = json_decode($jsonGroups);
-        $roosterGroepen = $roosterGroepen->groups;
+        $roosterGroups = json_decode($jsonGroups);
+        $roosterGroups = $roosterGroups->groups;
 
-        foreach ($roosterGroepen as $key => $value) {
+        foreach ($roosterGroups as $key => $value) {
             if(preg_match("`stoter`", $value->name)){
-                if(is_string($roosterId = $this->determineRoosterID($value->members, 'stoter'))){
+                if(is_string($roosterId = $this->determineRoosterId($value->members, 'stoter'))){
                     return $roosterId;
                 }
             }
             elseif(preg_match("`roode`", $value->name)) {
-                if (is_string($roosterId = $this->determineRoosterID($value->members, 'roode'))){
+                if (is_string($roosterId = $this->determineRoosterId($value->members, 'roode'))){
                     return $roosterId;
                 }
             }
@@ -194,12 +194,11 @@ class Client
      *
      * @return bool|string
      */
-    public function determineRoosterID ($key, $ltb){
+    public function determineRoosterId ($key, $ltb){
         if( in_array($_POST['user_id'], $key) ){
-            return ($ltb == 'stoter' ? '8306' : '2473');
+            return $ltb == 'stoter' ? '8306' : '2473';
         }
-        else {
-            return false;
-        }
+
+        return false;
     }
 }
