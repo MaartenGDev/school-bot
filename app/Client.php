@@ -159,17 +159,14 @@ class Client
      * @return bool|string
      */
     public function selectRooster(){
-        $data = ['token' => getenv('API_TOKEN')];
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => "https://slack.com/api/groups.list"
-        ]);
-        $jsonGroups = curl_exec($curl);
 
-        $roosterGroups = json_decode($jsonGroups);
+        $jsonGroups = $this->client->request('GET','https://slack.com/api/groups.list',[
+            'form_data' => [
+                'token' => getenv('API_TOKEN')
+            ]
+        ]);
+
+        $roosterGroups = json_decode($jsonGroups->getBody());
         $roosterGroups = $roosterGroups->groups;
 
         foreach ($roosterGroups as $key => $value) {
