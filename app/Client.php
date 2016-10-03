@@ -159,7 +159,7 @@ class Client
      * @return bool|string
      */
     public function selectRooster(){
-        $data = ['token' => "xoxp-31730314276-47553129539-85993043030-80e5d3b86526db733447a3d53eb8856f"];
+        $data = ['token' => getenv('API_TOKEN')];
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_POST => true,
