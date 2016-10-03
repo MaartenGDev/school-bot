@@ -7,8 +7,8 @@ use MaartenGDev\CacheInterface;
 
 class Client
 {
-    private $client;
-    private $parser;
+    protected $client;
+    protected $parser;
 
     protected $baseUrl;
 
@@ -99,7 +99,7 @@ class Client
         return $this->parser->parse($this->result);
     }
 
-    protected function getStartAndEndForWeek($year,$week)
+    protected function getStartAndEndForWeek($year, $week)
     {
         $startDate = new \DateTime();
 
@@ -117,11 +117,12 @@ class Client
         $end = $endDate->getTimestamp();
         return ['start' => $start, 'end' => $end];
     }
+
     /**
      * Get the week by sending a post request.
      *
      * @param integer $week The week number
-     * @param string  $year The year of the week.
+     * @param string $year The year of the week.
      *
      * @return array
      */
@@ -140,11 +141,12 @@ class Client
 
     }
 
-    public function getDay($day,$week, $year = null){
+    public function getDay($day, $week, $year = null)
+    {
 
         $data = $this->getWeek($week, $year);
 
-        $weeks = array_filter(json_decode($data), function($lesson) use ($day) {
+        $weeks = array_filter(json_decode($data), function ($lesson) use ($day) {
             $dayName = date('l', strtotime($lesson->start_date));
             return strtolower($dayName) === strtolower($day);
         });
@@ -158,9 +160,9 @@ class Client
      *
      * @return bool|string
      */
-    public function selectRooster(){
-
-        $jsonGroups = $this->client->request('GET','https://slack.com/api/groups.list',[
+    public function selectRooster()
+    {
+        $jsonGroups = $this->client->request('GET', 'https://slack.com/api/groups.list', [
             'form_data' => [
                 'token' => getenv('API_TOKEN')
             ]
@@ -170,15 +172,10 @@ class Client
         $roosterGroups = $roosterGroups->groups;
 
         foreach ($roosterGroups as $key => $value) {
-            if(preg_match("`stoter`", $value->name)){
-                if(is_string($roosterId = $this->determineRoosterId($value->members, 'stoter'))){
-                    return $roosterId;
-                }
-            }
-            elseif(preg_match("`roode`", $value->name)) {
-                if (is_string($roosterId = $this->determineRoosterId($value->members, 'roode'))){
-                    return $roosterId;
-                }
+            $teacher = preg_match("`stoter`", $value->name) ? 'stoter' : 'roode';
+
+            if (is_string($roosterId = $this->determineRoosterId($value->members, $teacher))) {
+                return $roosterId;
             }
         }
     }
@@ -191,8 +188,9 @@ class Client
      *
      * @return bool|string
      */
-    public function determineRoosterId ($key, $ltb){
-        if( in_array($_POST['user_id'], $key) ){
+    public function determineRoosterId($key, $ltb)
+    {
+        if (in_array($_POST['user_id'], $key)) {
             return $ltb == 'stoter' ? '8306' : '2473';
         }
 

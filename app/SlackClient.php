@@ -1,12 +1,11 @@
 <?php
+namespace App;
 
-namespace app;
-
-use App\Lesson;
-
-class SlackClient
+class SlackClient implements ParserInterface
 {
     protected $colors;
+    protected $week;
+    protected $translations;
 
     public function __construct() {
         $this->translations = collect([
