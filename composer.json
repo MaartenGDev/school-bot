@@ -7,7 +7,8 @@
 		"maartengdev/cache-drivers": "^1.0",
 		"nikic/fast-route": "^1.0",
 		"vlucas/phpdotenv": "^2.4",
-		"tightenco/collect": "^5.3"
+		"tightenco/collect": "^5.3",
+		"phpunit/phpunit": "^5.5"
 	},
 	"autoload": {
 		"psr-4": {
