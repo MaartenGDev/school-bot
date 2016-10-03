@@ -169,10 +169,10 @@ class Client
         ]);
         $jsonGroups = curl_exec($curl);
 
-        $roosterGroops = json_decode($jsonGroups);
-        $roosterGroops = $roosterGroops->groups;
+        $roostergroups = json_decode($jsonGroups);
+        $roostergroups = $roostergroups->groups;
 
-        foreach ($roosterGroops as $key => $value) {
+        foreach ($roostergroups as $key => $value) {
             if(preg_match("`stoter`", $value->name)){
                 if(is_string($roosterId = $this->determineRoosterId($value->members, 'stoter'))){
                     return $roosterId;
